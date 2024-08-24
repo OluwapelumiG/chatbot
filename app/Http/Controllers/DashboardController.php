@@ -21,7 +21,7 @@ class DashboardController extends Controller
         $botman = app('botman');
 
         $botman->hears('{message}', function ($botman, $message) {
-            if (strtolower($message) == 'hi') {
+            if ((strtolower($message) == 'hi') || (strtolower($message) == 'hello') || (strtolower($message) == 'hey') || (strtolower($message) == 'howdy') || (strtolower($message) == 'how far')) {
                 $botman->startConversation(new GreetConversation());
             } else {
                 $botman->reply('Please start by saying "hi".');
@@ -43,9 +43,37 @@ class GreetConversation extends Conversation
 
     public function askName()
     {
-        $this->ask('Hello! What is your name?', function (Answer $answer) {
+        // Array of possible greetings
+        $greetings = ['Hello', 'Hi', 'Howdy', 'Heyoo', 'Greetings', 'Welcome'];
+
+        // Array of possible ways to ask for the name
+        $questions = [
+            'What is your name?',
+            'Can I have your name?',
+            'May I know your name?',
+            'What should I call you?',
+            'Could you tell me your name?',
+            'What do you go by?'
+        ];
+
+        // Select a random greeting and question
+        $greeting = $greetings[array_rand($greetings)];
+        $question = $questions[array_rand($questions)];
+
+        // Use the selected greeting and question in the ask method
+        $this->ask("$greeting! $question", function (Answer $answer) {
             $this->name = $answer->getText();
-            $this->say('Nice to meet you ' . $this->name);
+
+            $responses = [
+                'Nice to meet you,',
+                'Pleased to meet you,',
+                'It\'s great to meet you,',
+                'Wonderful to meet you,',
+                'Glad to meet you,',
+                'Happy to meet you,'
+            ];
+            $response = $responses[array_rand($responses)];
+            $this->say("$response " . $this->name);
 
             $this->askBookDetails();
         });
@@ -70,7 +98,7 @@ class GreetConversation extends Conversation
                 $book = $books->first();
                 $this->say("The book you're looking for is \"{$book->title}\", by {$book->author}, in {$book->year}.\n The location is \"{$book->hall->name}, {$book->hall->description}\".");
             } else {
-                $this->say('No books found matching your query.');
+                $this->say('No books found matching your query. Please try again with fewer words');
             }
         });
     }

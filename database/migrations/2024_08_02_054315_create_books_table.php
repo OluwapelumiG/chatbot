@@ -16,8 +16,8 @@ return new class extends Migration
             $table->string('isbn')->unique();
             $table->string('title');
             $table->year('year');
-            $table->foreignId('field_id')->constrained();
-            $table->foreignId('hall_id')->constrained();
+            $table->integer('field_id');
+            $table->integer('hall_id');
             $table->string('author');
             $table->timestamps();
         });
